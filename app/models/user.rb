@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
 
   
   before_save { |user| user.email = email.downcase }
+  before_save :create_remember_token
   
   validates :name, presence: true, length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -30,4 +31,10 @@ class User < ActiveRecord::Base
   validates :password_confirmation, presence: true
   validates_attachment_size :profile_pic, less_than: 5.megabytes
   validates_attachment_content_type :profile_pic, content_type: ['image/jpeg', 'image/png']
+  
+  private
+  
+    def create_remember_token
+      self.remember_token = SecureRandom.urlsafe_base64
+    end
 end
